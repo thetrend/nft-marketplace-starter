@@ -1,5 +1,6 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
+import Skeleton from "react-loading-skeleton";
 import ReactOwlCarousel from "react-owl-carousel";
 import { Link } from "react-router-dom";
 
@@ -73,6 +74,8 @@ const HotCollections = () => {
     getCollection()
   }, [])
 
+  const skeletonItems = Array(4).fill('')
+
   return (
     <section id="section-collections" className="no-bottom">
       <div className="container">
@@ -83,12 +86,35 @@ const HotCollections = () => {
               <div className="small-border bg-color-2" />
             </div>
           </div>
-          {!loading && collection.length > 0 && (
+          {!loading && collection.length > 0 ? (
             <ReactOwlCarousel {...options}>
               {
                 collection.map(item => (<Item key={item.id} item={item} />))
               }
             </ReactOwlCarousel>
+          ) : (
+            <>
+              <ReactOwlCarousel {...options}>
+                {
+                  skeletonItems.map((item) => (
+                    <div key={item}>
+                      <div className="skeleton-box" style={{ width: '100%' }}>
+                        <div className="nft_wrap">
+                          <Skeleton className="lazy img-fluid" />
+                        </div>
+                        <div className="nft_coll_pp">
+                          <Skeleton className="lazy pp-coll" />
+                        </div>
+                        <div className="nft_coll_info">
+                          <Skeleton />
+                          <Skeleton />
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                }
+              </ReactOwlCarousel>
+            </>
           )}
         </div>
       </div>
