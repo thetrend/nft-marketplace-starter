@@ -9,7 +9,7 @@ const Skeleton = ({ width, height, borderRadius }) => {
         height,
         borderRadius,
       }}
-    ></div>
+    />
   );
 };
 

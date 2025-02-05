@@ -1,9 +1,81 @@
-import React from "react";
+import axios from "axios";
+import React, { useEffect, useState } from "react";
+import Skeleton from "react-loading-skeleton";
+import ReactOwlCarousel from "react-owl-carousel";
 import { Link } from "react-router-dom";
-import AuthorImage from "../../images/author_thumbnail.jpg";
-import nftImage from "../../images/nftImage.jpg";
+
+const Item = ({ item }) => {
+  return (
+    <div>
+      <div className="nft_coll">
+        <div className="nft_wrap">
+          <Link to="/item-details">
+            <img src={item.nftImage} className="lazy img-fluid" alt="" />
+          </Link>
+        </div>
+        <div className="nft_coll_pp">
+          <Link to="/author">
+            <img className="lazy pp-coll" src={item.authorImage} alt="" />
+          </Link>
+          <i className="fa fa-check" />
+        </div>
+        <div className="nft_coll_info">
+          <Link to="/explore">
+            <h4>{item.title}</h4>
+          </Link>
+          <span>{item.code}</span>
+        </div>
+      </div>
+    </div>
+  )
+}
 
 const HotCollections = () => {
+  const [collection, setCollection] = useState()
+  const [loading, setLoading] = useState(true)
+
+  const options = {
+    items: 4,
+    loop: true,
+    margin: 10,
+    nav: true,
+    dots: true,
+    responsive: {
+      0: {
+        items: 1,
+      },
+      600: {
+        items: 2,
+      },
+      1000: {
+        items: 4,
+      }
+    }
+  }
+
+  useEffect(() => {
+    const getCollection = async () => {
+      try {
+        setLoading(true)
+        const apiUrl = 'https://us-central1-nft-cloud-functions.cloudfunctions.net/hotCollections'
+        const response = await axios.get(apiUrl)
+        setCollection(prevCollection => {
+          if (JSON.stringify(prevCollection) !== JSON.stringify(response.data)) {
+            return response.data
+          }
+          return prevCollection
+        })
+      } catch (error) {
+        console.error('Error fetching collection:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+    getCollection()
+  }, [])
+
+  const skeletonItems = Array(4).fill('')
+
   return (
     <section id="section-collections" className="no-bottom">
       <div className="container">
@@ -11,32 +83,39 @@ const HotCollections = () => {
           <div className="col-lg-12">
             <div className="text-center">
               <h2>Hot Collections</h2>
-              <div className="small-border bg-color-2"></div>
+              <div className="small-border bg-color-2" />
             </div>
           </div>
-          {new Array(4).fill(0).map((_, index) => (
-            <div className="col-lg-3 col-md-6 col-sm-6 col-xs-12" key={index}>
-              <div className="nft_coll">
-                <div className="nft_wrap">
-                  <Link to="/item-details">
-                    <img src={nftImage} className="lazy img-fluid" alt="" />
-                  </Link>
-                </div>
-                <div className="nft_coll_pp">
-                  <Link to="/author">
-                    <img className="lazy pp-coll" src={AuthorImage} alt="" />
-                  </Link>
-                  <i className="fa fa-check"></i>
-                </div>
-                <div className="nft_coll_info">
-                  <Link to="/explore">
-                    <h4>Pinky Ocean</h4>
-                  </Link>
-                  <span>ERC-192</span>
-                </div>
-              </div>
-            </div>
-          ))}
+          {!loading && collection.length > 0 ? (
+            <ReactOwlCarousel {...options}>
+              {
+                collection.map(item => (<Item key={item.id} item={item} />))
+              }
+            </ReactOwlCarousel>
+          ) : (
+            <>
+              <ReactOwlCarousel {...options}>
+                {
+                  skeletonItems.map((item) => (
+                    <div key={item}>
+                      <div className="skeleton-box" style={{ width: '100%' }}>
+                        <div className="nft_wrap">
+                          <Skeleton className="lazy img-fluid" />
+                        </div>
+                        <div className="nft_coll_pp">
+                          <Skeleton className="lazy pp-coll" />
+                        </div>
+                        <div className="nft_coll_info">
+                          <Skeleton />
+                          <Skeleton />
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                }
+              </ReactOwlCarousel>
+            </>
+          )}
         </div>
       </div>
     </section>
