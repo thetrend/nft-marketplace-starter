@@ -1,10 +1,10 @@
-import Home from "./pages/Home";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import Explore from "./pages/Explore";
-import Author from "./pages/Author";
-import ItemDetails from "./pages/ItemDetails";
-import Nav from "./components/Nav";
+import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import Footer from "./components/Footer";
+import Nav from "./components/Nav";
+import Author from "./pages/Author";
+import Explore from "./pages/Explore";
+import Home from "./pages/Home";
+import ItemDetails from "./pages/ItemDetails";
 
 function App() {
   return (
@@ -13,7 +13,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/explore" element={<Explore />} />
-        <Route path="/author" element={<Author />} />
+        <Route path="/author/:authorId" element={<Author />} />
         <Route path="/item-details" element={<ItemDetails />} />
       </Routes>
       <Footer />
