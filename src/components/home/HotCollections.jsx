@@ -3,13 +3,14 @@ import React, { useEffect, useState } from "react";
 import Skeleton from "react-loading-skeleton";
 import ReactOwlCarousel from "react-owl-carousel";
 import { Link } from "react-router-dom";
+import { options } from "../../ReactOwlCarouselOptions";
 
 const Item = ({ item }) => {
   return (
     <div>
       <div className="nft_coll">
         <div className="nft_wrap">
-          <Link to="/item-details">
+          <Link to={`/item-details/${item.nftId}`}>
             <img src={item.nftImage} className="lazy img-fluid" alt="" />
           </Link>
         </div>
@@ -34,25 +35,6 @@ const HotCollections = () => {
   const [collection, setCollection] = useState()
   const [loading, setLoading] = useState(true)
 
-  const options = {
-    items: 4,
-    loop: true,
-    margin: 10,
-    nav: true,
-    dots: true,
-    responsive: {
-      0: {
-        items: 1,
-      },
-      600: {
-        items: 2,
-      },
-      1000: {
-        items: 4,
-      }
-    }
-  }
-
   useEffect(() => {
     const getCollection = async () => {
       try {
@@ -74,8 +56,6 @@ const HotCollections = () => {
     getCollection()
   }, [])
 
-  const skeletonItems = Array(4).fill('')
-
   return (
     <section id="section-collections" className="no-bottom">
       <div className="container">
@@ -86,35 +66,33 @@ const HotCollections = () => {
               <div className="small-border bg-color-2" />
             </div>
           </div>
-          {!loading && collection.length > 0 ? (
+
+          {loading ? (
+            new Array(4).fill(null).map((_, index) => (
+              // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
+              <div key={index} className="col-lg-3 col-md-6 col-sm-6 mb-4">
+                <div className="skeleton-box" style={{ width: '100%' }}>
+                  <div className="nft_wrap">
+                    <Skeleton className="lazy img-fluid" />
+                  </div>
+                  <div className="nft_coll_pp">
+                    <Skeleton className="lazy pp-coll" />
+                  </div>
+                  <div className="nft_coll_info">
+                    <Skeleton />
+                    <Skeleton />
+                  </div>
+                </div>
+              </div>
+            ))
+          ) : collection.length > 0 ? (
             <ReactOwlCarousel {...options}>
-              {
-                collection.map(item => (<Item key={item.id} item={item} />))
-              }
+              {collection.map((item) => (
+                <Item key={item.id} item={item} />
+              ))}
             </ReactOwlCarousel>
           ) : (
-            <>
-              <ReactOwlCarousel {...options}>
-                {
-                  skeletonItems.map((item) => (
-                    <div key={item}>
-                      <div className="skeleton-box" style={{ width: '100%' }}>
-                        <div className="nft_wrap">
-                          <Skeleton className="lazy img-fluid" />
-                        </div>
-                        <div className="nft_coll_pp">
-                          <Skeleton className="lazy pp-coll" />
-                        </div>
-                        <div className="nft_coll_info">
-                          <Skeleton />
-                          <Skeleton />
-                        </div>
-                      </div>
-                    </div>
-                  ))
-                }
-              </ReactOwlCarousel>
-            </>
+            <p className="text-center">No collections available.</p>
           )}
         </div>
       </div>
