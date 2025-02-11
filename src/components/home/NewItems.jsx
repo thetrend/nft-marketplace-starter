@@ -60,7 +60,7 @@ const NewItems = () => {
               </div>
             ))
           ) : collection.length > 0 ? (
-            <ReactOwlCarousel {...options}>
+            <ReactOwlCarousel {...options} data-aos="fade-up">
               {collection.map((item) => (
                 <Item key={item.id} item={item} />
               ))}
